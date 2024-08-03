@@ -11,3 +11,7 @@ def create(criteria_type: CriteriaTypeDTO) -> dict:
 @criteria_type_router.get('/criteriaType')
 def get_all() -> list[dict]:
     return CriteriaTypeService.get_all()
+
+@criteria_type_router.delete('/criteriaType')
+def delete(criteria_type: CriteriaTypeDTO) -> dict:
+    return CriteriaTypeService.delete(criteria_type)
