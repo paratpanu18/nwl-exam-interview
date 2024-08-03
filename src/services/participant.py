@@ -65,3 +65,27 @@ class ParticipantService:
             "nickname": participant["nickname"],
             "academic_year": participant["academic_year"]
         }
+    
+    def delete_participant_by_student_id(student_id: str):
+        participant = participant_collection.find_one({"student_id": student_id})
+        if not participant:
+            raise HTTPException(status_code=404, detail="Participant not found")
+        participant_collection.delete_one({"student_id": student_id})
+        return {
+            "message": "Participant deleted"
+        }
+    
+    def update_participant_by_student_id(student_id: str, data: ParticipantCreateDTO):
+        participant = participant_collection.find_one({"student_id": student_id})
+        if not participant:
+            raise HTTPException(status_code=404, detail="Participant not found")
+        participant_collection.update_one({"student_id": student_id}, {"$set": data.dict()})
+        
+        
+        return {
+            "id": str(participant["_id"]),
+            "student_id": data.student_id,
+            "name": data.name,
+            "nickname": data.nickname,
+            "academic_year": data.academic_year   
+        }
