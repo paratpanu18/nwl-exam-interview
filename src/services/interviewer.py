@@ -61,4 +61,14 @@ class InterviewerService:
             "name": interviewer["name"],
             "type": interviewer["type"]
         }
+    
+    @staticmethod
+    def delete_interviewer_by_name(name: str):
+        interviewer = interviewer_collection.find_one({"name": name})
+        if not interviewer:
+            raise HTTPException(status_code=404, detail="Interviewer not found")
+        interviewer_collection.delete_one({"name": name})
+        return {
+            "message": "Interviewer deleted"
+        }
         

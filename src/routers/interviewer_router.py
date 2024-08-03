@@ -15,3 +15,7 @@ def get_interviewers():
 @interviewer_router.get("/interviewer/{name}")
 def get_interviewer_by_name(name: str):
     return InterviewerService.get_interviewer_by_name(name)
+
+@interviewer_router.delete("/interviewer")
+def delete_interviewer_by_name(name: str):
+    return InterviewerService.delete_interviewer_by_name(name)
