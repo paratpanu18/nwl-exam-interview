@@ -13,3 +13,9 @@ class CriteriaDTO(BaseModel):
     criteria_name: str
     score: int
     comment: str
+    
+class ParticipantCreateDTO(BaseModel):
+    student_id: str
+    name: str
+    nickname: str
+    academic_year: str
