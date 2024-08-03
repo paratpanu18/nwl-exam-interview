@@ -5,11 +5,15 @@ from src.routers.criteria_type_router import criteria_type_router
 from src.routers.interviewer_router import interviewer_router
 
 from src.routers.interviewer_router import interviewer_router
+
+from src.routers.participant_router import participant_router
+
 from src.settings import settings
 
 app = FastAPI()
 app.include_router(interviewer_router)
 app.include_router(criteria_type_router)
+app.include_router(participant_router)
 
 @app.get("/")
 def read_root():

@@ -8,3 +8,4 @@ db = client[SETTINGS.MONGO_DB_NAME]
 
 criteria_type_collection = db["criteria_type_collection"]
 interviewer_collection = db["interviewers"]
+participant_collection = db["participants"]
