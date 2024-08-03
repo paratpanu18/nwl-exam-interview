@@ -6,3 +6,9 @@ class CriteriaTypeDTO(BaseModel):
 class InterviewerDTO(BaseModel):
     name: str
     type: str
+
+class ParticipantCreateDTO(BaseModel):
+    student_id: str
+    name: str
+    nickname: str
+    academic_year: str
