@@ -1,29 +1,35 @@
-from src.schemas import CriteriaDTO
+from src.schemas import CriteriaCreateDTO, CriteriaDeleteDTO
 from src.db import criteria_collection
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from src.services.participant import ParticipantService
 from src.services.criteria_type_service import CriteriaTypeService
 from src.services.interviewer import InterviewerService
+from src.services.participant import ParticipantService
 
 class CriteriaService:
-    def create(data: CriteriaDTO) -> dict:
+    def create(data: CriteriaCreateDTO) -> dict:
         name = data.criteria_name
+        student_id = data.student_id
+        interviewer_id = data.interviewer_id
 
         if not CriteriaTypeService.isCriteriaTypeValid(name):
-            return {'message': 'criteria not in type'}
-        if data.interviewer_id not in [interviewer['id'] for interviewer in InterviewerService.get_interviewers()]:
-            return {'message': 'Interview does not exist'}
-        
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = 'Criteria name is not exist')
+        if interviewer_id not in [interviewer['id'] for interviewer in InterviewerService.get_interviewers()]:
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = 'Interview id does not exist')
+        if not ParticipantService.get_participant_by_student_id(student_id):
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = 'Student id does not exist')
+
         result = criteria_collection.insert_one({
-            'interviewer_id': data.interviewer_id,
-            'student_id': data.student_id,
+            'interviewer_id': interviewer_id,
+            'student_id': student_id,
             'criteria_name': name,
             'score': data.score,
             'comment': data.comment,
-        }).inserted_id
+        })
 
-        return {'criteria_id': result}
+        return {'criteria_id': str(result.inserted_id)}
     
+
     def get_all() -> list[dict]:
         result = []
         for criteria in criteria_collection.find():
@@ -32,15 +38,26 @@ class CriteriaService:
                 'criteria_name': criteria['criteria_name'],
                 'interviewer_id': criteria['interviewer_id'],
                 'student_id': criteria['student_id'],
-                
-
             })
+
         return result
     
-    def delete(data: CriteriaDTO) -> dict:
-        return
+
+    def delete(data: CriteriaDeleteDTO) -> dict:
+        interviewer_id = data.interviewer_id
+        student_id = data.student_id
+        criteria_name = data.criteria_name
+        query = {}
+
+        if interviewer_id: query['interviewer_id'] = interviewer_id
+        if student_id: query['student_id'] = student_id
+        if criteria_name: query['criteria_name'] = criteria_name
+        d = criteria_collection.delete_many(query)
+
+        return {'deleted_count': d.deleted_count}
     
-    def update_criteria(data: CriteriaDTO) -> dict:
+
+    def update_criteria(data: CriteriaCreateDTO) -> dict:
         if criteria_collection.find_one_and_update({
             'interviewer_id': data.interviewer_id,
             'student_id': data.student_id,
@@ -55,13 +72,6 @@ class CriteriaService:
         else:
             return CriteriaService.create(data)
 
-
-    @staticmethod
-    def get_avg_score(student_id: str):
-        # for criteria in criteria_collection.find({'student_id': student_id}):
-        #     pass
-        return 
-    
     @staticmethod
     def get_criteria_by_interviewer(interviewer_id: str):
         student_criteria_list = []

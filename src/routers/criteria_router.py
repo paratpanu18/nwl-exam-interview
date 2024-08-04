@@ -1,16 +1,9 @@
 from src.services.criteria_service import CriteriaService
 from fastapi import APIRouter
-from src.schemas import CriteriaDTO
+from src.schemas import CriteriaCreateDTO, CriteriaDeleteDTO
 
 criteria_router = APIRouter(tags=["criteria"])
 
-# @criteria_router.post('/criteria')
-# def create(criteria: CriteriaDTO) -> dict:
-#     return CriteriaService.create(criteria)
-
-# @criteria_router.get('/criteria/{student_id}') #for admin
-# def get_avg_score(student_id: str):
-#     return CriteriaService.get_avg_score(student_id)
 
 @criteria_router.get('/criteria/{interviwer_id}/{student_id}')
 def get_criteria_of_participant(interviewer_id: str, student_id: str):
@@ -20,10 +13,14 @@ def get_criteria_of_participant(interviewer_id: str, student_id: str):
 def get_criteria_by_interviewer(interviewer_id: str):
     return CriteriaService.get_criteria_by_interviewer(interviewer_id)
 
-@criteria_router.get('/criteria')
+@criteria_router.get('/criterias')
 def get_all():
     return CriteriaService.get_all()
 
 @criteria_router.put('/criteria')
-def update(criteria: CriteriaDTO) -> dict:
+def update(criteria: CriteriaCreateDTO) -> dict:
     return CriteriaService.update_criteria(criteria)
+
+@criteria_router.delete('/criteria')
+def delete(criteria: CriteriaDeleteDTO) -> dict:
+    return CriteriaService.delete(criteria)
