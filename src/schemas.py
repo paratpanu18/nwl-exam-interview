@@ -6,7 +6,7 @@ class SeniorType(str, Enum):
     SECONDARY = 'SECONDARY'
     ADMIN = 'ADMIN'
 
-class CriteriaTypeDTO(BaseModel):
+class CriteriaTypeCreateDTO(BaseModel):
     name: str
 
 class SeniorCreateDTO(BaseModel):
