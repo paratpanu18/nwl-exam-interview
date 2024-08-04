@@ -1,10 +1,11 @@
 from src.schemas import CriteriaCreateDTO, CriteriaDeleteDTO
-from src.db import criteria_collection
+from src.db import criteria_collection, interviewer_collection
 from fastapi import HTTPException, status
 from src.services.participant import ParticipantService
 from src.services.criteria_type_service import CriteriaTypeService
 from src.services.interviewer import InterviewerService
 from src.services.participant import ParticipantService
+from bson.objectid import ObjectId
 
 class CriteriaService:
     def create(data: CriteriaCreateDTO) -> dict:
@@ -49,9 +50,21 @@ class CriteriaService:
         criteria_name = data.criteria_name
         query = {}
 
-        if interviewer_id: query['interviewer_id'] = interviewer_id
-        if student_id: query['student_id'] = student_id
-        if criteria_name: query['criteria_name'] = criteria_name
+        if interviewer_id: 
+            query['interviewer_id'] = interviewer_id
+            if interviewer_id not in [interviewer['id'] for interviewer in InterviewerService.get_interviewers()]:
+                raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = 'Interview id does not exist')
+        if student_id: 
+            query['student_id'] = student_id
+            if not ParticipantService.get_participant_by_student_id(student_id):
+                raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = 'Student id does not exist')
+        if criteria_name: 
+            query['criteria_name'] = criteria_name
+            if not CriteriaTypeService.isCriteriaTypeValid(criteria_name):
+                raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = 'Criteria name is not exist')
+        if query == {}:
+            raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = 'Body does not have any field')
+        
         d = criteria_collection.delete_many(query)
 
         return {'deleted_count': d.deleted_count}
