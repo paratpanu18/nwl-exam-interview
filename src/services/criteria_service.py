@@ -3,16 +3,19 @@ from src.db import criteria_collection
 from fastapi import HTTPException
 from src.services.participant import ParticipantService
 from src.services.criteria_type_service import CriteriaTypeService
+from src.services.interviewer import InterviewerService
 
 class CriteriaService:
     def create(data: CriteriaDTO) -> dict:
         name = data.criteria_name
         if not CriteriaTypeService.isCriteriaTypeValid(name):
             return {'message': 'criteria not in type'}
+        if data.interviewer_id not in [interviewer['id'] for interviewer in InterviewerService.get_interviewers()]:
+            return {'message': 'Interview does not exist'}
         criteria_collection.insert_one({
             'interviewer_id': data.interviewer_id,
             'student_id': data.student_id,
-            'criteria_name': data.criteria_name,
+            'criteria_name': name,
             'score': data.score,
             'comment': data.comment,
         }).inserted_id
@@ -28,7 +31,7 @@ class CriteriaService:
         return
     
     def update_criteria(data: CriteriaDTO) -> dict:
-        criteria_collection.find_one_and_update({
+        if criteria_collection.find_one_and_update({
             'interviewer_id': data.interviewer_id,
             'student_id': data.student_id,
             'criteria_name': data.criteria_name,
@@ -37,9 +40,10 @@ class CriteriaService:
             'score': data.score,
             'comment': data.comment,
         }}
-        )
-
-        return {'message': 'updated successful'}
+        ):
+            return {'message': 'updated successful'}
+        else:
+            return CriteriaService.create(data)
 
 
     @staticmethod
