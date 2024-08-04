@@ -1,6 +1,7 @@
 from src.schemas import CriteriaDTO
-from src.db import criteria_collection
+from src.db import criteria_collection, interviewer_collection
 from fastapi import HTTPException
+from bson.objectid import ObjectId
 from src.services.participant import ParticipantService
 from src.services.criteria_type_service import CriteriaTypeService
 from src.services.interviewer import InterviewerService
@@ -58,9 +59,47 @@ class CriteriaService:
 
     @staticmethod
     def get_avg_score(student_id: str):
-        # for criteria in criteria_collection.find({'student_id': student_id}):
-        #     pass
-        return 
+        
+        total_score = {
+            "student_id": student_id,
+            "scores" : {}
+        }
+        
+        for criteria in criteria_collection.find({'student_id': student_id}):
+            criteria_type = criteria['criteria_name']
+            interviewer_id = criteria['interviewer_id']
+            interviewer_type = interviewer_collection.find_one({'_id': ObjectId(interviewer_id)})['type']
+
+            if criteria_type not in total_score['scores']:
+                total_score['scores'][criteria_type] = {
+                    'primary_sum': 0,
+                    'primary_count': 0,
+                    'secondary_sum': 0,
+                    'secondary_count': 0,
+                    'total': 0
+                }
+            
+            if interviewer_type == 'PRIMARY':
+                total_score['scores'][criteria_type]['primary_sum'] += criteria['score']
+                total_score['scores'][criteria_type]['primary_count'] += 1
+            elif interviewer_type == 'SECONDARY':
+                total_score['scores'][criteria_type]['secondary_sum'] += criteria['score']
+                total_score['scores'][criteria_type]['secondary_count'] += 1
+
+        for criteria_type in total_score['scores']:
+            primary_sum = total_score['scores'][criteria_type]['primary_sum']
+            primary_count = total_score['scores'][criteria_type]['primary_count']
+            secondary_sum = total_score['scores'][criteria_type]['secondary_sum']
+            secondary_count = total_score['scores'][criteria_type]['secondary_count']
+            if secondary_count == 0 and primary_count == 0:
+                total_score['scores'][criteria_type]['total'] = 0
+                continue
+
+            secondary_avg = secondary_sum / secondary_count if secondary_count != 0 else 0
+
+            total_score['scores'][criteria_type]['total'] = (primary_sum + secondary_avg) / (primary_count + (1 if secondary_count != 0 else 0))
+
+        return total_score
     
     @staticmethod
     def get_criteria_by_interviewer(interviewer_id: str):
