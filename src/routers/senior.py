@@ -24,3 +24,7 @@ def get_senior_by_name(name: str) -> SeniorDTO:
 @senior_router.delete("/senior/{name}")
 def delete_senior_by_name(name: str) -> None:
     return SeniorService.delete_senior_by_name(name)
+
+@senior_router.get("/senior/get_assigned_score/{senior_id}/{junior_id}")
+def get_assigned_score(senior_id: str, junior_id: str):
+    return SeniorService.get_assigned_score(senior_id, junior_id)

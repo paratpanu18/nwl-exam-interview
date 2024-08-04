@@ -1,6 +1,8 @@
 from fastapi import HTTPException
+from bson.objectid import ObjectId
+
 from src.schemas import SeniorCreateDTO
-from src.db import senior_collection
+from src.db import senior_collection, score_collection, junior_collection, criteria_type_collection
 
 TYPES = ['ADMIN', 'PRIMARY', 'SECONDARY']
 
@@ -58,5 +60,38 @@ class SeniorService:
             raise HTTPException(status_code=404, detail="Senior (Interviewer) not found")
         
         senior_collection.delete_one({"name": name})
+        score_collection.delete_many({"senior_id": str(target_senior["_id"])})
         return
+    
+    @staticmethod
+    def get_assigned_score(senior_id: str, junior_id: str):
+        senior = senior_collection.find_one({"_id": ObjectId(senior_id)})
+        if not senior:
+            raise HTTPException(status_code=404, detail="Senior not found")
         
+        junior = junior_collection.find_one({"_id": ObjectId(junior_id)})
+        if not junior:
+            raise HTTPException(status_code=404, detail="Junior not found")
+
+        result = {
+            "senior_id": senior_id,
+            "senior_name": senior["name"],
+            "junior_id": junior_id,
+            "junior_name": junior["name"],
+            "scores": [
+
+            ]
+        }
+
+        for score in score_collection.find({"senior_id": senior_id, "junior_id": junior_id}):
+            criteria_id = score["criteria_id"]
+            criteria_name = criteria_type_collection.find_one({"_id": ObjectId(criteria_id)})["name"]
+
+            result["scores"].append({
+                "criteria_id": criteria_id,
+                "criteria_name": criteria_name,
+                "score": score["score"],
+                "comment": score["comment"]
+            })
+        
+        return result

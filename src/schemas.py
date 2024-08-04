@@ -30,3 +30,10 @@ class CriteriaDeleteDTO(BaseModel):
     interviewer_id: str 
     student_id: str
     criteria_name: str
+
+class ScoreCreateDTO(BaseModel):
+    junior_id: str
+    senior_id: str
+    criteria_id: str
+    score: int
+    comment: str | None = None
