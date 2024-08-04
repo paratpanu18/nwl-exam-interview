@@ -134,19 +134,8 @@ class CriteriaService:
                 student_criteria_list.append(criteria_of_student)
 
         return student_criteria_list
-# [)
-#     {
-#         'std_name': 'Fluk',
-#         'criterias': [{
-#             'criteria_name': 'Is this girl?',
-#             'score': 8
-#             },
-#             {'criteria_name': 'Is he/she good?',
-#             'score': 7
-#             },
-#         ]
-#     },
-# ]    
+
+
     def get_criteria_of_participant(interviewer_id: str, student_id: str):
         result = {}
         criterias_of_participant = []
