@@ -1,11 +1,24 @@
+from enum import Enum
 from pydantic import BaseModel, Field
+
+
+class SeniorType(str, Enum):
+    ADMIN = 'ADMIN'
+    PRIMARY = 'PRIMARY'
+    SECONDARY = 'SECONDARY'
 
 class CriteriaTypeDTO(BaseModel):
     name: str
-    
-class InterviewerDTO(BaseModel):
+
+class SeniorDTO(BaseModel):
     name: str
-    type: str
+    type: SeniorType
+
+class JuniorCreateDTO(BaseModel):
+    student_id: str
+    name: str
+    nickname: str
+    academic_year: str
 
 class CriteriaCreateDTO(BaseModel):
     interviewer_id: str
@@ -15,14 +28,6 @@ class CriteriaCreateDTO(BaseModel):
     comment: str
     
 class CriteriaDeleteDTO(BaseModel):
-    interviewer_id: str | None = None
-    student_id: str | None = None
-    criteria_name: str | None = None
-
-class ParticipantCreateDTO(BaseModel):
+    interviewer_id: str 
     student_id: str
-    name: str
-    nickname: str
-    academic_year: str
-
-
+    criteria_name: str

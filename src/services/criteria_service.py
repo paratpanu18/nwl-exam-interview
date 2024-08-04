@@ -1,10 +1,10 @@
 from src.schemas import CriteriaCreateDTO, CriteriaDeleteDTO
 from src.db import criteria_collection, interviewer_collection
 from fastapi import HTTPException, status
-from src.services.participant import ParticipantService
+from services.junior import ParticipantService
 from src.services.criteria_type_service import CriteriaTypeService
 from src.services.interviewer import InterviewerService
-from src.services.participant import ParticipantService
+from services.junior import ParticipantService
 from bson.objectid import ObjectId
 
 class CriteriaService:
