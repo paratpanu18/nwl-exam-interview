@@ -7,7 +7,7 @@ from src.services.criteria_type_service import CriteriaTypeService
 class CriteriaService:
     def create(data: CriteriaDTO) -> dict:
         name = data.criteria_name
-        if not CriteriaTypeService.isCreteriaTypeValid(name):
+        if not CriteriaTypeService.isCriteriaTypeValid(name):
             return {'message': 'criteria not in type'}
         criteria_collection.insert_one({
             'interviewer_id': data.interviewer_id,
@@ -27,6 +27,21 @@ class CriteriaService:
     def delete(data: CriteriaDTO) -> dict:
         return
     
+    def update_criteria(data: CriteriaDTO) -> dict:
+        criteria_collection.find_one_and_update({
+            'interviewer_id': data.interviewer_id,
+            'student_id': data.student_id,
+            'criteria_name': data.criteria_name,
+        },
+        {'$set':{
+            'score': data.score,
+            'comment': data.comment,
+        }}
+        )
+
+        return {'message': 'updated successful'}
+
+
     @staticmethod
     def get_avg_score(student_id: str):
         # for criteria in criteria_collection.find({'student_id': student_id}):
