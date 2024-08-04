@@ -12,13 +12,17 @@ criteria_router = APIRouter(tags=["criteria"])
 # def get_avg_score(student_id: str):
 #     return CriteriaService.get_avg_score(student_id)
 
-@criteria_router.get('/criteria/{interviwer_id}')
+@criteria_router.get('/criteria/{interviwer_id}/{student_id}')
 def get_criteria_of_participant(interviewer_id: str, student_id: str):
     return CriteriaService.get_criteria_of_participant(interviewer_id, student_id)
 
 @criteria_router.get('/criteria/{interviewer_id}')
 def get_criteria_by_interviewer(interviewer_id: str):
     return CriteriaService.get_criteria_by_interviewer(interviewer_id)
+
+@criteria_router.get('/criteria')
+def get_all():
+    return CriteriaService.get_all()
 
 @criteria_router.put('/criteria')
 def update(criteria: CriteriaDTO) -> dict:

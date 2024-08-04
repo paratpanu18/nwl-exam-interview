@@ -8,23 +8,33 @@ from src.services.interviewer import InterviewerService
 class CriteriaService:
     def create(data: CriteriaDTO) -> dict:
         name = data.criteria_name
+
         if not CriteriaTypeService.isCriteriaTypeValid(name):
             return {'message': 'criteria not in type'}
         if data.interviewer_id not in [interviewer['id'] for interviewer in InterviewerService.get_interviewers()]:
             return {'message': 'Interview does not exist'}
-        criteria_collection.insert_one({
+        
+        result = criteria_collection.insert_one({
             'interviewer_id': data.interviewer_id,
             'student_id': data.student_id,
             'criteria_name': name,
             'score': data.score,
             'comment': data.comment,
         }).inserted_id
-        return {'message': 'success'}
+
+        return {'criteria_id': result}
     
     def get_all() -> list[dict]:
         result = []
         for criteria in criteria_collection.find():
-            result.append(criteria)
+            result.append({
+                'id': str(criteria['_id']),
+                'criteria_name': criteria['criteria_name'],
+                'interviewer_id': criteria['interviewer_id'],
+                'student_id': criteria['student_id'],
+                
+
+            })
         return result
     
     def delete(data: CriteriaDTO) -> dict:
