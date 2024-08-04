@@ -2,9 +2,13 @@ from src.schemas import CriteriaDTO
 from src.db import criteria_collection
 from fastapi import HTTPException
 from src.services.participant import ParticipantService
+from src.services.criteria_type_service import CriteriaTypeService
 
 class CriteriaService:
     def create(data: CriteriaDTO) -> dict:
+        name = data.criteria_name
+        if not CriteriaTypeService.isCreteriaTypeValid(name):
+            return {'message': 'criteria not in type'}
         criteria_collection.insert_one({
             'interviewer_id': data.interviewer_id,
             'student_id': data.student_id,
@@ -25,8 +29,8 @@ class CriteriaService:
     
     @staticmethod
     def get_avg_score(student_id: str):
-        for criteria in criteria_collection.find({'student_id': student_id}):
-            pass
+        # for criteria in criteria_collection.find({'student_id': student_id}):
+        #     pass
         return 
     
     @staticmethod
@@ -37,10 +41,12 @@ class CriteriaService:
         criteria_of_student = {}
 
         for criteria in criteria_collection.find({'interviewer_id': interviewer_id}):
-
-            if student_id != criteria['student_id']:
-                student_id = criteria['student_id']
-                criteria_of_student = CriteriaService.get_criteria_of_participant(interviewer_id, student_id)
+            student_id = criteria['student_id']
+            criteria_of_student = CriteriaService.get_criteria_of_participant(interviewer_id, student_id)
+            student_id_list = [criteria['student']['student_id'] for criteria in student_criteria_list]
+            if student_id in student_id_list:
+                pass
+            else:
                 student_criteria_list.append(criteria_of_student)
 
         return student_criteria_list

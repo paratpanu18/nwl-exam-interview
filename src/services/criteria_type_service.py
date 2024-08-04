@@ -25,3 +25,7 @@ class CriteriaTypeService:
             raise HTTPException(status_code=404, detail="Criteria type not found")
         criteria_type_collection.delete_one({'name': name})
         return {'message': 'Deleted Successful'}
+    
+    def isCreteriaTypeValid(criteria_type_name: str):
+        all_name = [criteria['name'] for criteria in criteria_type_collection.find()]
+        return criteria_type_name in all_name
