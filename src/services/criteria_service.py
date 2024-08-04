@@ -3,7 +3,7 @@ from src.db import criteria_collection, interviewer_collection
 from fastapi import HTTPException, status
 from services.junior import ParticipantService
 from src.services.criteria_type_service import CriteriaTypeService
-from src.services.interviewer import InterviewerService
+from services.senior import InterviewerService
 from services.junior import ParticipantService
 from bson.objectid import ObjectId
 

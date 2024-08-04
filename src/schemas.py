@@ -1,16 +1,15 @@
 from enum import Enum
 from pydantic import BaseModel, Field
 
-
 class SeniorType(str, Enum):
-    ADMIN = 'ADMIN'
     PRIMARY = 'PRIMARY'
     SECONDARY = 'SECONDARY'
+    ADMIN = 'ADMIN'
 
 class CriteriaTypeDTO(BaseModel):
     name: str
 
-class SeniorDTO(BaseModel):
+class SeniorCreateDTO(BaseModel):
     name: str
     type: SeniorType
 
