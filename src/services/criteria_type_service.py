@@ -26,6 +26,6 @@ class CriteriaTypeService:
         criteria_type_collection.delete_one({'name': name})
         return {'message': 'Deleted Successful'}
     
-    def isCreteriaTypeValid(criteria_type_name: str):
+    def isCriteriaTypeValid(criteria_type_name: str):
         all_name = [criteria['name'] for criteria in criteria_type_collection.find()]
         return criteria_type_name in all_name
