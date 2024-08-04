@@ -1,13 +1,24 @@
 from src.schemas import CriteriaDTO
 from src.db import criteria_collection
 from fastapi import HTTPException
+from src.services.participant import ParticipantService
 
 class CriteriaService:
     def create(data: CriteriaDTO) -> dict:
-        return
+        criteria_collection.insert_one({
+            'interviewer_id': data.interviewer_id,
+            'student_id': data.student_id,
+            'criteria_name': data.criteria_name,
+            'score': data.score,
+            'comment': data.comment,
+        }).inserted_id
+        return {'message': 'success'}
     
     def get_all() -> list[dict]:
-        return 
+        result = []
+        for criteria in criteria_collection.find():
+            result.append(criteria)
+        return result
     
     def delete(data: CriteriaDTO) -> dict:
         return
@@ -21,14 +32,19 @@ class CriteriaService:
     @staticmethod
     def get_criteria_by_interviewer(interviewer_id: str):
         student_criteria_list = []
-        for criteria in criteria_collection.find({'interviewer_id': interviewer_id}):
-            # student_id = criteria['student_id']
-            # student_criteria_list.append({
-                
-            # })
-            pass
+        student_id = None
 
-# [
+        criteria_of_student = {}
+
+        for criteria in criteria_collection.find({'interviewer_id': interviewer_id}):
+
+            if student_id != criteria['student_id']:
+                student_id = criteria['student_id']
+                criteria_of_student = CriteriaService.get_criteria_of_participant(interviewer_id, student_id)
+                student_criteria_list.append(criteria_of_student)
+
+        return student_criteria_list
+# [)
 #     {
 #         'std_name': 'Fluk',
 #         'criterias': [{
@@ -41,3 +57,19 @@ class CriteriaService:
 #         ]
 #     },
 # ]    
+    def get_criteria_of_participant(interviewer_id: str, student_id: str):
+        result = {}
+        criterias_of_participant = []
+        for criteria in criteria_collection.find({'interviewer_id': interviewer_id, 'student_id': student_id}):
+            if not criterias_of_participant:
+                result['student'] = ParticipantService.get_participant_by_student_id(student_id)
+            criterias_of_participant.append({
+                'criteria_name': criteria['criteria_name'],
+                'score': str(criteria['score']),
+                'comment': criteria['comment']
+            })
+        result['criterias'] = criterias_of_participant
+        return result
+
+
+

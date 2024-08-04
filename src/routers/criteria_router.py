@@ -15,3 +15,7 @@ def get_avg_score(student_id: str):
 @criteria_router.get('/criteria/')
 def get_criteria_by_interviewer(interviewer_id: str):
     return CriteriaService.get_criteria_by_interviewer(interviewer_id)
+
+@criteria_router.get('/creteria/')
+def get_criteria_of_participant(interviewer_id: str, student_id: str):
+    return CriteriaService.get_criteria_of_participant(interviewer_id, student_id)
