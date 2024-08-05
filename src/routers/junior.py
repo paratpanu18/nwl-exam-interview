@@ -14,7 +14,8 @@ class JuniorDTO(JuniorCreateDTO):
 def get_average_score_by_student_id(student_id: str):
     junior: dict = JuniorService.get_junior_by_student_id(student_id)
     junior.update({"score": ScoreService.get_average_score_by_student_id(student_id)})
-    junior.update({"total_avg_score": sum(junior["score"].values()) / len(junior["score"])})
+    total_avg_score = {"total_avg_score": sum(junior["score"].values()) / len(junior["score"])} if len(junior["score"]) > 0 else {"total_avg_score": 0}
+    junior.update(total_avg_score)
 
     return junior
 
