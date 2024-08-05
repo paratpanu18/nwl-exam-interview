@@ -95,3 +95,83 @@ class SeniorService:
             })
         
         return result
+    
+    @staticmethod
+    def get_assigned_score_by_senior(senior_id: str):
+
+        senior = senior_collection.find_one({"_id": ObjectId(senior_id)})
+        if not senior:
+            raise HTTPException(status_code=404, detail="Senior not found")
+
+        result = {
+            "senior_id": senior_id,
+            "senior_name": senior["name"],
+            "juniors": [
+
+            ],
+        }
+
+        added_junior_ids = []
+
+        for score in score_collection.find({"senior_id": senior_id}):
+
+            junior_id = score["junior_id"]
+
+            if junior_id not in added_junior_ids:
+
+                junior = junior_collection.find_one({"_id": ObjectId(junior_id)})
+
+                added_junior_ids.append(junior_id)
+
+                sub_result = {
+                    "junior_id": junior_id,
+                    "junior_name": junior["name"],
+                    "scores": [
+
+
+                    ]
+                }
+
+                result["juniors"].append(sub_result)
+            
+            index = added_junior_ids.index(junior_id)
+
+            junior = result["juniors"][index]
+
+            criteria_id = score["criteria_id"]
+            criteria_name = criteria_type_collection.find_one({"_id": ObjectId(criteria_id)})["name"]
+
+            junior["scores"].append({
+                "criteria_id": criteria_id,
+                "criteria_name": criteria_name,
+                "score": score["score"],
+                "comment": score["comment"]
+                }
+            )
+        
+
+        for junior in junior_collection.find():
+
+            result["juniors"].append({
+                "junior_id": str(junior["_id"]),
+                "junior_name": junior["name"],
+                "scores": []
+            })
+
+
+        for criteria in criteria_type_collection.find():
+            
+            criteria_id = str(criteria["_id"])
+
+            for junior in result["juniors"]:
+
+                if criteria_id not in [score["criteria_id"] for score in junior["scores"]]:
+
+                    junior["scores"].append({
+                        "criteria_id": criteria_id,
+                        "criteria_name": criteria["name"],
+                        "score": 0,
+                        "comment": ""
+                    })
+
+        return result
