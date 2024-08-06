@@ -116,8 +116,8 @@ class SeniorService:
             junior_id = str(junior["_id"])
 
             result["juniors"].append({
-                "junior_id": junior_id,
-                "junior_name": junior["name"],
+                "id": junior_id,
+                "name": junior["name"],
                 "student_id": junior["student_id"],
                 "academic_year": junior["academic_year"],
                 "nickname": junior["nickname"],
