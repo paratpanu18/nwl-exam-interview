@@ -127,7 +127,6 @@ class SeniorService:
                 
                 criteria_id = str(criteria["_id"])
                 criteria_name = criteria["name"]    
-                print(senior_id, junior_id, criteria_id)
 
                 score = score_collection.find_one({"senior_id": senior_id, "junior_id": junior_id, "criteria_id": criteria_id})
 
