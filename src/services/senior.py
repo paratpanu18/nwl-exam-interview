@@ -118,6 +118,9 @@ class SeniorService:
             result["juniors"].append({
                 "junior_id": junior_id,
                 "junior_name": junior["name"],
+                "student_id": junior["student_id"],
+                "academic_year": junior["academic_year"],
+                "nickname": junior["nickname"],
                 "scores": [
                     
                 ]
