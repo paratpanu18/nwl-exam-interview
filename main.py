@@ -1,22 +1,25 @@
 from fastapi import FastAPI
-from src.settings import settings
+from fastapi_pagination import add_pagination
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from src.routers.criteria_type_router import criteria_type_router
-from src.routers.interviewer_router import interviewer_router
-
-from src.routers.criteria_router import criteria_router
-
-from src.routers.interviewer_router import interviewer_router
-
-from src.routers.participant_router import participant_router
 
 from src.settings import settings
+from src.routers.api_router import api_router
 
 app = FastAPI()
-app.include_router(interviewer_router)
-app.include_router(criteria_type_router)
-app.include_router(participant_router)
-app.include_router(criteria_router)
+app.include_router(api_router)
+
+origins = ["*"] 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+add_pagination(app)
 
 @app.get("/")
 def read_root():
