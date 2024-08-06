@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Union
 from pydantic import BaseModel, Field
 
 class SeniorType(str, Enum):
@@ -36,4 +37,4 @@ class ScoreCreateDTO(BaseModel):
     senior_id: str
     criteria_id: str
     score: int
-    comment: str | None = None
+    comment: Union[str, None] = None
