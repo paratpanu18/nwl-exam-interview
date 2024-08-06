@@ -111,67 +111,51 @@ class SeniorService:
             ],
         }
 
-        added_junior_ids = []
-
-        for score in score_collection.find({"senior_id": senior_id}):
-
-            junior_id = score["junior_id"]
-
-            if junior_id not in added_junior_ids:
-
-                junior = junior_collection.find_one({"_id": ObjectId(junior_id)})
-
-                added_junior_ids.append(junior_id)
-
-                sub_result = {
-                    "junior_id": junior_id,
-                    "junior_name": junior["name"],
-                    "scores": [
-
-
-                    ]
-                }
-
-                result["juniors"].append(sub_result)
-            
-            index = added_junior_ids.index(junior_id)
-
-            junior = result["juniors"][index]
-
-            criteria_id = score["criteria_id"]
-            criteria_name = criteria_type_collection.find_one({"_id": ObjectId(criteria_id)})["name"]
-
-            junior["scores"].append({
-                "criteria_id": criteria_id,
-                "criteria_name": criteria_name,
-                "score": score["score"],
-                "comment": score["comment"]
-                }
-            )
-        
-
         for junior in junior_collection.find():
 
+            junior_id = str(junior["_id"])
+
             result["juniors"].append({
-                "junior_id": str(junior["_id"]),
+                "junior_id": junior_id,
                 "junior_name": junior["name"],
-                "scores": []
+                "scores": [
+                    
+                ]
             })
 
+            for criteria in criteria_type_collection.find():
+                
+                criteria_id = str(criteria["_id"])
+                criteria_name = criteria["name"]    
+                print(senior_id, junior_id, criteria_id)
 
-        for criteria in criteria_type_collection.find():
-            
-            criteria_id = str(criteria["_id"])
+                score = score_collection.find_one({"senior_id": senior_id, "junior_id": junior_id, "criteria_id": criteria_id})
 
-            for junior in result["juniors"]:
-
-                if criteria_id not in [score["criteria_id"] for score in junior["scores"]]:
-
-                    junior["scores"].append({
-                        "criteria_id": criteria_id,
-                        "criteria_name": criteria["name"],
-                        "score": 0,
-                        "comment": ""
+                if not score:
+                    result["juniors"][-1]["scores"].append({
+                    "criteria_id": criteria_id,
+                    "criteria_name": criteria_name,
+                    "score": 0,
+                    "comment": ""
                     })
 
+                    continue
+
+                score_point = score["score"]
+                comment = score["comment"]
+
+                if not score:
+                    score_point = 0
+                    comment = ""
+
+
+                result["juniors"][-1]["scores"].append({
+                    "criteria_id": criteria_id,
+                    "criteria_name": criteria_name,
+                    "score": score_point,
+                    "comment": comment
+                })
+                    
+
         return result
+           
