@@ -137,25 +137,17 @@ class SeniorService:
                     result["juniors"][-1]["scores"].append({
                     "criteria_id": criteria_id,
                     "criteria_name": criteria_name,
-                    "score": 0,
+                    "score": '-',
                     "comment": ""
                     })
 
                     continue
 
-                score_point = score["score"]
-                comment = score["comment"]
-
-                if not score:
-                    score_point = 0
-                    comment = ""
-
-
                 result["juniors"][-1]["scores"].append({
                     "criteria_id": criteria_id,
                     "criteria_name": criteria_name,
-                    "score": score_point,
-                    "comment": comment
+                    "score": score["score"],
+                    "comment": score["comment"]
                 })
                     
 

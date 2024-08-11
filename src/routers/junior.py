@@ -49,4 +49,6 @@ def delete_junior_by_student_id(student_id: str) -> None:
 def update_junior_by_student_id(student_id: str, new_data: JuniorCreateDTO) -> JuniorDTO:
     return JuniorService.update_junior_by_student_id(student_id, new_data)
 
-
+@junior_router.get("/junior/comment/{student_id}")
+def get_junior_comment_by_student_id(student_id: str) -> dict:
+    return JuniorService.get_comment_by_student_id(student_id)

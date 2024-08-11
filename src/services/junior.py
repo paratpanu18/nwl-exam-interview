@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from src.util import is_valid_student_id
 from src.schemas import JuniorCreateDTO
 from src.db import junior_collection
+from src.services.score import ScoreService
 
 class JuniorService:
     @staticmethod
@@ -92,3 +93,9 @@ class JuniorService:
             "nickname": data.nickname,
             "academic_year": data.academic_year   
         }
+    
+    @staticmethod
+    def get_comment_by_student_id(student_id: str):
+        junior: dict = JuniorService.get_junior_by_student_id(student_id)
+        junior["criterias"] = ScoreService.get_comment_by_junior_id(junior["id"])
+        return junior
