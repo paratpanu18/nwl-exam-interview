@@ -152,4 +152,22 @@ class SeniorService:
                     
 
         return result
+    
+    @staticmethod
+    def update_senior(senior_id: str, senior: SeniorCreateDTO):
+        name = senior.name
+        type = senior.type
+
+        if type not in TYPES:
+            raise HTTPException(status_code=400, detail="Invalid senior (Interviewer) type: [ADMIN, PRIMARY, SECONDARY]")
+        
+        if senior_collection.find_one({"name": name}):
+            raise HTTPException(status_code=400, detail="Senior (Interviewer) already exists, name must be unique for each interviewer")
+        
+        senior_collection.update_one({"_id": ObjectId(senior_id)}, {"$set": {"name": name, "type": type}})
+        return {
+            "id": senior_id,
+            "name": name,
+            "type": type
+        }
            
