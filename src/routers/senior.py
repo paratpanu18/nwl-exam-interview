@@ -32,3 +32,7 @@ def get_assigned_score(senior_id: str):
 @senior_router.get("/senior/get_assigned_score/{senior_id}/{junior_id}")
 def get_assigned_score(senior_id: str, junior_id: str):
     return SeniorService.get_assigned_score(senior_id, junior_id)
+
+@senior_router.put("/senior/{senior_id}/")
+def update_senior(senior_id: str, senior: SeniorCreateDTO):
+    return SeniorService.update_senior(senior_id, senior)
