@@ -161,7 +161,7 @@ class SeniorService:
         if type not in TYPES:
             raise HTTPException(status_code=400, detail="Invalid senior (Interviewer) type: [ADMIN, PRIMARY, SECONDARY]")
         
-        if senior_collection.find_one({"name": name}):
+        if senior_collection.find_one({"name": name}) and senior_collection.find_one({"name": name})["_id"] != ObjectId(senior_id):
             raise HTTPException(status_code=400, detail="Senior (Interviewer) already exists, name must be unique for each interviewer")
         
         senior_collection.update_one({"_id": ObjectId(senior_id)}, {"$set": {"name": name, "type": type}})
