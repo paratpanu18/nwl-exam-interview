@@ -54,14 +54,14 @@ class SeniorService:
         }
     
     @staticmethod
-    def delete_senior_by_name(name: str):
-        target_senior = senior_collection.find_one({"name": name})
-        if not target_senior:
+    def delete_senior_by_id(senior_id: str):
+        senior = senior_collection.find_one({"_id": ObjectId(senior_id)})
+        if not senior:
             raise HTTPException(status_code=404, detail="Senior (Interviewer) not found")
         
-        senior_collection.delete_one({"name": name})
-        score_collection.delete_many({"senior_id": str(target_senior["_id"])})
-        return
+        senior_collection.delete_one({"_id": ObjectId(senior_id)})
+        score_collection.delete_many({"senior_id": senior_id})
+        return None
     
     @staticmethod
     def get_assigned_score(senior_id: str, junior_id: str):

@@ -21,9 +21,9 @@ def list_senior(type: SeniorType | None = None) -> Page[SeniorDTO]:
 def get_senior_by_name(name: str) -> SeniorDTO:
     return SeniorService.get_senior_by_name(name)
 
-@senior_router.delete("/senior/{name}")
-def delete_senior_by_name(name: str) -> None:
-    return SeniorService.delete_senior_by_name(name)
+@senior_router.delete("/senior/{senior_id}")
+def delete_senior_by_id(senior_id: str) -> None:
+    return SeniorService.delete_senior_by_id(senior_id)
 
 @senior_router.get("/senior/get_assigned_score/{senior_id}")
 def get_assigned_score(senior_id: str):
