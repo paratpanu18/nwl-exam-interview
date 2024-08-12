@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from bson.objectid import ObjectId
 
 from src.schemas import CriteriaTypeCreateDTO
-from src.db import criteria_type_collection
+from src.db import criteria_type_collection, score_collection
 
 class CriteriaTypeService:
     def create_new_criteria_type(data: CriteriaTypeCreateDTO) -> dict:
@@ -28,12 +28,13 @@ class CriteriaTypeService:
             })
         return all_criteria_types
     
-    def delete_criteria_type(data: CriteriaTypeCreateDTO) -> None:
-        name = data.name
-        if not criteria_type_collection.find_one({'name': name}):
+    def delete_criteria_type(id: str) -> None:
+        target_criteria_type = criteria_type_collection.find_one({"_id": ObjectId(id)})
+        if not target_criteria_type:
             raise HTTPException(status_code=404, detail="Criteria type not found")
         
-        criteria_type_collection.delete_one({'name': name})
+        criteria_type_collection.delete_one({"_id": ObjectId(id)})
+        score_collection.delete_many({"criteria_type_id": ObjectId(id)})
         return
     
     def rename_criteria_type(criteria_type_id: str, new_name: str) -> CriteriaTypeCreateDTO:
