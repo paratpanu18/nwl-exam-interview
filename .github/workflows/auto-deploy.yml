@@ -27,7 +27,7 @@ jobs:
         
       - name: Remove old Docker images
         run: |
-          docker image prune -f --filter "label=api-image" || true
+          docker image prune -f --filter "dangling=true" || true
     
       - name: Build Docker image
         run: |
