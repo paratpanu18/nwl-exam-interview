@@ -28,10 +28,11 @@ jobs:
       # - name: Remove old Docker images
       #   run: |
       #     docker image prune -f --filter "label=api-image" || true
+
     
       - name: Build Docker image
         run: |
-          docker build -t api-image .
+          docker build --rm -t api-image .
 
       - name: Run Docker container
         run: |
