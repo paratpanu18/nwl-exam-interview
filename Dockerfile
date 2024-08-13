@@ -26,14 +26,16 @@ RUN wget https://bootstrap.pypa.io/get-pip.py && \
 # Create a symlink to make python3 point to python3.12
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
 
+COPY requirements.txt .
+
+# Install any Python dependencies from requirements.txt if it exists
+RUN if [ -f requirements.txt ]; then pip3.12 install -r requirements.txt; fi
+
 # Copy everything from the current directory to the container's working directory
 COPY . /nwl-interview-exam
 
 # Set the working directory to /nwl-interview-exam
 WORKDIR /nwl-interview-exam
-
-# Install any Python dependencies from requirements.txt if it exists
-RUN if [ -f requirements.txt ]; then pip3.12 install -r requirements.txt; fi
 
 # Expose port 6970
 EXPOSE 6970
