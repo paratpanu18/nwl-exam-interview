@@ -31,7 +31,7 @@ jobs:
     
       - name: Build Docker image
         run: |
-          docker build -t api-image .
+          docker build --rm -t api-image .
 
       - name: Run Docker container
         run: |
