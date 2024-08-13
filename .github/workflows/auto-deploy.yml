@@ -21,13 +21,13 @@ jobs:
           echo "Environment variables created successfully : "
           cat .env
 
-      - name: Remove old Docker container
-        run: |
-          docker rm -f nwl-interview-scoring-api || true
+      # - name: Remove old Docker container
+      #   run: |
+      #     docker rm -f nwl-interview-scoring-api || true
         
-      - name: Remove old Docker images
-        run: |
-          docker image prune -f --filter "label=api-image" || true
+      # - name: Remove old Docker images
+      #   run: |
+      #     docker image prune -f --filter "label=api-image" || true
     
       - name: Build Docker image
         run: |
