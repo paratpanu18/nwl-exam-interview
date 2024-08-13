@@ -12,22 +12,11 @@ class JuniorDTO(JuniorCreateDTO):
 
 @junior_router.get('/junior/score/{student_id}')
 def get_average_score_by_student_id(student_id: str):
-    junior: dict = JuniorService.get_junior_by_student_id(student_id)
-    junior.update({"score": ScoreService.get_average_score_by_student_id(student_id)})
-    total_avg_score = {"total_avg_score": sum(junior["score"].values()) / len(junior["score"])} if len(junior["score"]) > 0 else {"total_avg_score": 0}
-    junior.update(total_avg_score)
-
-    return junior
+    return JuniorService.get_avg_score_by_student_id(student_id)
 
 @junior_router.get('/junior/score')
 def get_all_junior_score() -> Page[dict]:
-    juniors = JuniorService.list_all_junior()
-    for junior in juniors:
-        junior.update({"score": ScoreService.get_average_score_by_student_id(junior["student_id"])})
-        total_avg_score = {"total_avg_score": sum(junior["score"].values()) / len(junior["score"])} if len(junior["score"]) > 0 else {"total_avg_score": 0}
-        junior.update(total_avg_score)
-
-    return paginate(juniors)
+    return paginate(JuniorService.get_all_junior_score())
 
 @junior_router.post("/junior")
 def create_new_junior(junior: JuniorCreateDTO) -> JuniorDTO:

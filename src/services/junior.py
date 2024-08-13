@@ -4,6 +4,7 @@ from src.util import is_valid_student_id
 from src.schemas import JuniorCreateDTO
 from src.db import junior_collection
 from src.services.score import ScoreService
+from src.services.criteria_type import criteria_type_collection
 
 class JuniorService:
     @staticmethod
@@ -98,4 +99,49 @@ class JuniorService:
     def get_comment_by_student_id(student_id: str):
         junior: dict = JuniorService.get_junior_by_student_id(student_id)
         junior["criterias"] = ScoreService.get_comment_by_junior_id(junior["id"])
+        return junior
+    
+    @staticmethod
+    def get_all_junior_score():
+        juniors = JuniorService.list_all_junior()
+        for junior in juniors:
+            junior.update({"score": ScoreService.get_average_score_by_student_id(junior["student_id"])})
+
+            total_avg_score = 0
+
+            if len(junior["score"]):
+                total_avg_score = sum(junior["score"].values()) / len(junior["score"])
+
+            junior["total_avg_score"] = total_avg_score
+
+            for criteria in criteria_type_collection.find():
+
+                criteria_name = criteria["name"]
+
+                if criteria_name not in junior["score"].keys():
+                    junior["score"][criteria_name] = '-'
+
+            print(junior["score"])
+
+        return juniors
+    
+    @staticmethod
+    def get_avg_score_by_student_id(student_id: str):
+        junior: dict = JuniorService.get_junior_by_student_id(student_id)
+        junior.update({"score": ScoreService.get_average_score_by_student_id(student_id)})
+
+        total_avg_score = 0
+
+        if len(junior["score"]):
+            total_avg_score = sum(junior["score"].values()) / len(junior["score"])
+
+        junior["total_avg_score"] = total_avg_score
+
+        for criteria in criteria_type_collection.find():
+
+            criteria_name = criteria["name"]
+
+            if criteria_name not in junior["score"].keys():
+                junior["score"][criteria_name] = '-'
+
         return junior
