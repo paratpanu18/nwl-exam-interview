@@ -117,35 +117,29 @@ class ScoreService:
             "comment": data.comment if data.comment else ""
         }
     
-    def get_comment_by_junior_id(junior_id: str) -> list:
+    def get_comment_by_junior_id(junior_id: str) -> dict:
         
-        result = []
+        result = {}
 
         for criteria in criteria_type_collection.find():
 
             criteria_name = criteria["name"]
             criteria_id = str(criteria["_id"])
 
-            result.append({
-                "criteria_id": criteria_id,
-                "criteria_name": criteria_name,
-                "comments": [
+            result[criteria_name] = {
+                "comments": {
 
-
-                ]
-            })
+                }
+            }
 
             for score in score_collection.find({"criteria_id": criteria_id}):
                 senior_id = score["senior_id"]
                 senior_name = senior_collection.find_one({"_id": ObjectId(senior_id)})["name"]
 
-                if score["comment" ] != "":
+                if score["comment"] != "":
 
-                    result[-1]["comments"].append({
-                        "senior_id": senior_id,
-                        "senior_name": senior_name,
-                        "comment": score["comment"]
-                    })
+                    result[criteria_name]["comments"][senior_name] = score["comment"]
+
 
         return result
 

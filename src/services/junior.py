@@ -121,19 +121,40 @@ class JuniorService:
                 if criteria_name not in junior["score"].keys():
                     junior["score"][criteria_name] = '-'
 
-            print(junior["score"])
-
         return juniors
     
     @staticmethod
     def get_avg_score_by_student_id(student_id: str):
         junior: dict = JuniorService.get_junior_by_student_id(student_id)
-        junior.update({"score": ScoreService.get_average_score_by_student_id(student_id)})
+        junior["criteria"] = {
+
+        }
+        
+        each_criteria_score = ScoreService.get_average_score_by_student_id(student_id)
+        each_criteria_comment = ScoreService.get_comment_by_junior_id(junior["id"])
+
+        for criteria in criteria_type_collection.find():
+
+            criteria_name = criteria["name"]
+
+            if criteria_name not in each_criteria_score.keys():
+                 continue
+
+            junior["criteria"][criteria_name] = {
+                "avg_score": each_criteria_score[criteria_name],
+                "comments": each_criteria_comment[criteria_name]["comments"]
+            }
 
         total_avg_score = 0
 
-        if len(junior["score"]):
-            total_avg_score = sum(junior["score"].values()) / len(junior["score"])
+        if len(junior["criteria"]):
+
+            sum_of_score = 0
+
+            for k, v in junior["criteria"].items():
+                sum_of_score += v["avg_score"]
+
+            total_avg_score = sum_of_score / len(junior["criteria"])
 
         junior["total_avg_score"] = total_avg_score
 
@@ -141,7 +162,10 @@ class JuniorService:
 
             criteria_name = criteria["name"]
 
-            if criteria_name not in junior["score"].keys():
-                junior["score"][criteria_name] = '-'
+            if criteria_name not in each_criteria_score.keys():
+                junior["criteria"][criteria_name] = {
+                    "avg_score ": "-",
+                    "comment": {}
+                }
 
         return junior
