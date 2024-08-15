@@ -3,6 +3,7 @@ name: NETWORK AND CLOUD LABORATORY - Interview score system auto deployment pipe
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   build-and-deploy:
@@ -24,12 +25,11 @@ jobs:
       - name: Remove old Docker container
         run: |
            docker rm -f nwl-interview-scoring-api || true
-        
+
       # - name: Remove old Docker images
       #   run: |
       #     docker image prune -f --filter "label=api-image" || true
 
-    
       - name: Build Docker image
         run: |
           docker build --rm -t api-image .
