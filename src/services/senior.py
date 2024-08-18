@@ -77,6 +77,9 @@ class SeniorService:
             "senior_id": senior_id,
             "senior_name": senior["name"],
             "junior_id": junior_id,
+            "junior_student_id": junior["student_id"],
+            "junior_nickname": junior["nickname"],
+            "junior_academic_year": junior["academic_year"],
             "junior_name": junior["name"],
             "scores": [
 
