@@ -9,7 +9,9 @@ from src.routers.api_router import api_router
 app = FastAPI(docs_url=None, redoc_url=None)
 app.include_router(api_router)
 
-origins = ['http://localhost'] 
+origins = ['http://localhost',
+           'http://0.0.0.0',
+           'localhost',] 
 
 app.add_middleware(
     CORSMiddleware,
