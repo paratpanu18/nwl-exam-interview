@@ -6,10 +6,10 @@ import uvicorn
 from src.settings import settings
 from src.routers.api_router import api_router
 
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None)
 app.include_router(api_router)
 
-origins = ["*"] 
+origins = ['http://localhost'] 
 
 app.add_middleware(
     CORSMiddleware,
