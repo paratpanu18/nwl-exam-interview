@@ -34,7 +34,7 @@ class CriteriaTypeService:
             raise HTTPException(status_code=404, detail="Criteria type not found")
         
         criteria_type_collection.delete_one({"_id": ObjectId(id)})
-        score_collection.delete_many({"criteria_id": ObjectId(id)})
+        score_collection.delete_many({"criteria_id": id})
         return
     
     def rename_criteria_type(criteria_type_id: str, new_name: str) -> CriteriaTypeCreateDTO:
