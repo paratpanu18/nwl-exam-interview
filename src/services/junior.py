@@ -164,8 +164,8 @@ class JuniorService:
 
             if criteria_name not in each_criteria_score.keys():
                 junior["criteria"][criteria_name] = {
-                    "avg_score ": "-",
-                    "comment": {}
+                    "avg_score": "-",
+                    "comments": {}
                 }
 
         return junior

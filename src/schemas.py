@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class SeniorType(str, Enum):
     PRIMARY = 'PRIMARY'
@@ -20,21 +20,19 @@ class JuniorCreateDTO(BaseModel):
     nickname: str
     academic_year: str
 
-class CriteriaCreateDTO(BaseModel):
-    interviewer_id: str
-    student_id: str
-    criteria_name: str
-    score: int
-    comment: str
-    
-class CriteriaDeleteDTO(BaseModel):
-    interviewer_id: str 
-    student_id: str
-    criteria_name: str
-
 class ScoreCreateDTO(BaseModel):
     junior_id: str
     senior_id: str
     criteria_id: str
     score: int
     comment: Union[str, None] = None
+
+class ScoreSetDTO(BaseModel):
+    criteria_id: str
+    score: int
+    comment: Union[str, None] = None
+
+class ManyScoreCreateDTO(BaseModel):
+    junior_id: str
+    senior_id: str
+    score_set: list[ScoreSetDTO]                                                                                                      

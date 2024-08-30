@@ -2,7 +2,7 @@ from bson.objectid import ObjectId
 from fastapi import HTTPException, status
 
 from src.db import score_collection, junior_collection, senior_collection, criteria_type_collection
-from src.schemas import ScoreCreateDTO
+from src.schemas import ScoreCreateDTO, ManyScoreCreateDTO
 
 class ScoreService:
     def assign_score_to_junior(data: ScoreCreateDTO):
@@ -118,7 +118,6 @@ class ScoreService:
         }
     
     def get_comment_by_junior_id(junior_id: str) -> dict:
-        
         result = {}
 
         for criteria in criteria_type_collection.find():
@@ -140,13 +139,100 @@ class ScoreService:
 
                     result[criteria_name]["comments"][senior_name] = score["comment"]
 
-
         return result
 
+    def assign_scores_to_junior(data: ManyScoreCreateDTO):
+        junior = junior_collection.find_one({"_id": ObjectId(data.junior_id)})
+        if not junior:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Junior not found")
+        junior_name = junior["name"]
 
+        senior = senior_collection.find_one({"_id": ObjectId(data.senior_id)})
+        if not senior:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Senior not found")
+        senior_name = senior["name"]
 
+        many_score_doc = []
 
+        for score in data.score_set:
+            criteria = criteria_type_collection.find_one({"_id": ObjectId(score.criteria_id)})
+            if not criteria:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Criteria not found")
+            criteria_name = criteria["name"]
 
+            existing_score = score_collection.find_one({"junior_id": data.junior_id, "senior_id": data.senior_id, "criteria_id": score.criteria_id})
+
+            if existing_score:
+                detail_message = f"Score already exists for junior: {junior_name}, senior: {senior_name}, criteria: {criteria_name} -> score: {existing_score['score']}, comment: {existing_score['comment']}. Please use PUT method to update the score"
+                
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail_message)
             
+            many_score_doc.append({
+                "junior_id": data.junior_id,
+                "senior_id": data.senior_id,
+                "criteria_id": score.criteria_id,
+                "score": score.score,
+                "comment": score.comment if score.comment else ""
+            })
 
+        score_collection.insert_many(many_score_doc).inserted_ids
+
+        for score in many_score_doc:
+            score["id"] = str(score["_id"])
+            score.pop("_id"), score.pop("junior_id"), score.pop("senior_id")
+            score["criteria_id"] = criteria_type_collection.find_one({"_id": ObjectId(score["criteria_id"])})["name"]
+
+        return {
+            "junior_id": junior_name,
+            "senior_id": senior_name,
+            "score_set": many_score_doc
+        }
+
+    def update_scores(data: ManyScoreCreateDTO) -> dict:
+        junior = junior_collection.find_one({"_id": ObjectId(data.junior_id)})
+        if not junior:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Junior not found")
+        junior_name = junior["name"]
+
+        senior = senior_collection.find_one({"_id": ObjectId(data.senior_id)})
+        if not senior:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Senior not found")
+        senior_name = senior["name"]
+
+        many_score_doc = []
+
+        for score in data.score_set:
+            criteria = criteria_type_collection.find_one({"_id": ObjectId(score.criteria_id)})
+            if not criteria:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Criteria not found")
+
+            if not score_collection.find_one({"junior_id": data.junior_id, "senior_id": data.senior_id, "criteria_id": score.criteria_id}):
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Score not found")
             
+            many_score_doc.append({
+                "junior_id": data.junior_id,
+                "senior_id": data.senior_id,
+                "criteria_id": score.criteria_id,
+                "score": score.score,
+                "comment": score.comment if score.comment else ""
+            })
+
+        for score in many_score_doc:
+            score_collection.update_one({
+                "junior_id": score["junior_id"],
+                "senior_id": score["senior_id"],
+                "criteria_id": score["criteria_id"]
+            }, {
+            "$set": {
+                "score": score["score"],
+                "comment": score["comment"]
+            }})
+
+            score.pop("junior_id"), score.pop("senior_id")
+            score["criteria_id"] = criteria_type_collection.find_one({"_id": ObjectId(score["criteria_id"])})["name"]
+
+        return {
+            "junior_id": junior_name,
+            "senior_id": senior_name,
+            "score_set": many_score_doc
+        }
