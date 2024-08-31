@@ -4,7 +4,7 @@ from src.util import is_valid_student_id
 from src.schemas import JuniorCreateDTO
 from src.db import junior_collection
 from src.services.score import ScoreService
-from src.services.criteria_type import criteria_type_collection
+from src.services.criteria_type import criteria_type_collection, score_collection
 
 class JuniorService:
     @staticmethod
@@ -73,6 +73,7 @@ class JuniorService:
             raise HTTPException(status_code=404, detail="Junior (Interviewee) not found")
         
         junior_collection.delete_one({"student_id": student_id})
+        score_collection.delete_many({"junior_id": str(target_junior["_id"])})
 
         return 
     
