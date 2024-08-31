@@ -131,7 +131,7 @@ class ScoreService:
                 }
             }
 
-            for score in score_collection.find({"criteria_id": criteria_id}):
+            for score in score_collection.find({"criteria_id": criteria_id, "junior_id": junior_id}):
                 senior_id = score["senior_id"]
                 senior_name = senior_collection.find_one({"_id": ObjectId(senior_id)})["name"]
 
