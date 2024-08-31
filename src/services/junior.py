@@ -96,12 +96,6 @@ class JuniorService:
         }
     
     @staticmethod
-    def get_comment_by_student_id(student_id: str):
-        junior: dict = JuniorService.get_junior_by_student_id(student_id)
-        junior["criterias"] = ScoreService.get_comment_by_junior_id(junior["id"])
-        return junior
-    
-    @staticmethod
     def get_all_junior_score():
         juniors = JuniorService.list_all_junior()
         for junior in juniors:
@@ -146,7 +140,6 @@ class JuniorService:
             }
 
         total_avg_score = 0
-
         if len(junior["criteria"]):
 
             sum_of_score = 0
